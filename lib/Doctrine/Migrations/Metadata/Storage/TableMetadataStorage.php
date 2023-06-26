@@ -245,7 +245,9 @@ final class TableMetadataStorage implements MetadataStorage
         $schemaChangelog->addColumn(
             $this->configuration->getVersionColumnName(),
             'string',
-            ['notnull' => true, 'length' => $this->configuration->getVersionColumnLength()]
+            ['notnull' => true, 'length' => $this->configuration->getVersionColumnLength(),
+            'platformOptions' => ['charset' => 'utf8mb4', 'collation' => 'utf8mb4_general_ci']
+            ]
         );
         $schemaChangelog->addColumn($this->configuration->getExecutedAtColumnName(), 'datetime', ['notnull' => false]);
         $schemaChangelog->addColumn($this->configuration->getExecutionTimeColumnName(), 'integer', ['notnull' => false]);

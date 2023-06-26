@@ -1,3 +1,41 @@
+**HOTFIX**: Added hardcoded `platformOptions` to the "expected table" definition in
+`/lib/Doctrine/Migrations/Metadata/Storage/TableMetadataStorage.php`
+
+
+```php
+private function getExpectedTable(): Table
+    {
+        // ...
+
+        $schemaChangelog->addColumn(
+            $this->configuration->getVersionColumnName(),
+            'string',
+            ['notnull' => true, 'length' => $this->configuration->getVersionColumnLength()]
+        );
+        
+        // ...  
+    }
+```
+
+Added hardcoded options for MySQL 8.0 with `utf8mb4`
+
+```php
+private function getExpectedTable(): Table
+    {
+        // ...
+
+        $schemaChangelog->addColumn(
+            $this->configuration->getVersionColumnName(),
+            'string',
+            ['notnull' => true, 'length' => $this->configuration->getVersionColumnLength(),
+            'platformOptions' => ['charset' => 'utf8mb4', 'collation' => 'utf8mb4_general_ci']     
+            ]
+        );
+        
+        // ...  
+    }
+```
+
 # Doctrine Migrations
 
 [![Build Status](https://github.com/doctrine/migrations/workflows/Continuous%20Integration/badge.svg)](https://github.com/doctrine/migrations/actions)
