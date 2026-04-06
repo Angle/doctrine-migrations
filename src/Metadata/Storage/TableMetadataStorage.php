@@ -217,6 +217,33 @@ final class TableMetadataStorage implements MetadataStorage
 
         $diff = $comparator->compareTables($currentTable, $expectedTable);
 
+        if (! $diff->isEmpty()) {
+            // Filter out false positives: columns reported as modified by the platform-level
+            // comparator (e.g. due to charset/collation from DB introspection) but with no
+            // actual changed properties detected by diffColumn().
+            $hasRealColumnChanges = false;
+            foreach ($diff->getModifiedColumns() as $columnDiff) {
+                if ($columnDiff->changedProperties !== []) {
+                    $hasRealColumnChanges = true;
+                    break;
+                }
+            }
+
+            if (
+                ! $hasRealColumnChanges
+                && count($diff->getAddedColumns()) === 0
+                && count($diff->getDroppedColumns()) === 0
+                && count($diff->getAddedIndexes()) === 0
+                && count($diff->getModifiedIndexes()) === 0
+                && count($diff->getDroppedIndexes()) === 0
+                && count($diff->getAddedForeignKeys()) === 0
+                && count($diff->getModifiedForeignKeys()) === 0
+                && count($diff->getDroppedForeignKeys()) === 0
+            ) {
+                return null;
+            }
+        }
+
         return $diff->isEmpty() ? null : $diff;
     }
 
